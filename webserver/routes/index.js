@@ -6,7 +6,7 @@ function orderLetters(word) {
 }
 
 function confirmAnagram(newWord, existingWord) {
-  return orderLetters(newWord) === orderLetters(existingWord);
+  return newWord === existingWord;
 }
 
 function addNewWordToCorrectBucket(newWord, anagramsHeap) {
@@ -23,12 +23,14 @@ function addNewWordToCorrectBucket(newWord, anagramsHeap) {
 }
 
 router.get('/v1/anagrams', function(req, res) {
-  const anagramsHeap = [];
+  const anagramsHeap = {};
   const words = req.query.words.split(',');
   if(words.length > 0 && words[0].length > 0) {
     words.forEach(newWord => {
-      newWord = newWord.toLowerCase();
-      addNewWordToCorrectBucket(newWord, anagramsHeap);
+      newWord = orderLetters(newWord.toLowerCase());
+      if(!anagramsHeap[newWord]) {
+        addNewWordToCorrectBucket(newWord, anagramsHeap);
+      }
     });
   }
   res.send({ 'anagrams (v1)': anagramsHeap });
